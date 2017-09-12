@@ -1,6 +1,8 @@
 "use strict";
 
-var root, observer, buttonsDiv, observerInterval;
+console.log("Injecting tree hacks");
+
+var root, observer, buttonsDiv, observerTimeout;
 
 const retryInterval = window.setInterval(initialize, 1000);
 
@@ -108,9 +110,9 @@ function matchRootClassToSetting(className, val) {
 function startObserver() {
     if (!observer) return;
 
-    window.clearTimeout(observerInterval);
+    window.clearTimeout(observerTimeout);
 
-    observerInterval = window.setTimeout(observe, 500);
+    observerTimeout = window.setTimeout(observe, 500);
 }
 
 function observe() {

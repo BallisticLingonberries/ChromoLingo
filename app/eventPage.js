@@ -8,6 +8,9 @@ chrome.runtime.onInstalled.addListener(function() {
     for (let i = 0, l = ids.length; i < l; i++) {
         chrome.contextMenus.create(getMenuItem(ids[i], titles[i], "checkbox"));
     }
+
+   // chrome.contextMenus.create(getMenuItem("sep2", "Separator", "separator"));
+    chrome.contextMenus.create(getMenuItem("hide_stickied", "Hide Stickied Posts", "checkbox"));
 });
 
 function getMenuItem(id, title, type) {
@@ -44,26 +47,25 @@ chrome.contextMenus.onClicked.addListener(function(info) {
 });
 
 chrome.storage.onChanged.addListener(function(setting) {
+    console.log("Setting changed", setting);
+
     const settingName = Object.keys(setting)[0],
-        newValue = setting[settingName]["newValue"],
-        settingObject = {
-            "setting": settingName,
-            "value": newValue
-        };
+        newValue = setting[settingName]["newValue"];
 
     chrome.contextMenus.update(settingName, { "checked": newValue });
 
-    console.log("Settings", settingObject);
-
     chrome.tabs.query({
-        active: true,
-        currentWindow: true
-    }, function(tabs) {
-        if (!tabs.length) return;
-
-        chrome.tabs.sendMessage(tabs[0].id, settingObject);
-    });
+        url: "*://*.duolingo.com/*"
+    }, sendMessageToTabs);
 });
+
+function sendMessageToTabs(tabs) {
+    tabs.forEach(sendMessage);
+}
+
+function sendMessage(tab) {
+    chrome.tabs.sendMessage(tab.id, { "reason": "settingsUpdated" });
+}
 
 chrome.commands.onCommand.addListener(function(command) {
     console.log("Command:", command);

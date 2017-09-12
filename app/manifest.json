@@ -10,13 +10,27 @@
   "content_scripts": [
     {
       "matches": [
-        "*://www.duolingo.com/*"
+        "*://www.duolingo.com/",
+        "*://www.duolingo.com/labs",
+        "*://www.duolingo.com/show_store"
       ],
       "js": [
-        "flip_tree_hide_gold/content.js"
+        "tree_tweaks/tree.js"
       ],
       "css": [
-        "flip_tree_hide_gold/style.css"
+        "tree_tweaks/tree.css"
+      ]
+    },
+    {
+      "matches": [
+        "*://www.duolingo.com/discussion/*",
+        "*://www.duolingo.com/topic/*"
+      ],
+      "js": [
+        "forum_tweaks/forum.js"
+      ],
+      "css": [
+        "forum_tweaks/forum.css"
       ]
     }
   ],
@@ -27,23 +41,6 @@
     "tabs"
   ],
   "commands": {
-    "toggle_hide_gold": {
-      "suggested_key": {
-        "default": "Ctrl+Shift+G",
-        "mac": "Command+Shift+G"
-      },
-      "description": "Hide gold skills"
-    },
-    "toggle_hide_locked": {
-      "description": "Hide locked skills"
-    },
-    "toggle_flip_tree": {
-      "suggested_key": {
-        "default": "Ctrl+Shift+F",
-        "mac": "Command+Shift+F"
-      },
-      "description": "Flip tree"
-    },
     "launch_practice": {
       "suggested_key": {
         "default": "Ctrl+Shift+2",
@@ -51,6 +48,18 @@
       },
       "description": "Launch practice for current language",
       "global": true
+    },
+    "toggle_hide_stickied": {
+      "description": "Toggle: Hide sticked forum posts"
+    },
+    "toggle_hide_locked": {
+      "description": "Toggle: Hide locked skills"
+    },
+    "toggle_hide_gold": {
+      "description": "Toggle: Hide gold skills"
+    },
+    "toggle_flip_tree": {
+      "description": "Toggle: Flip tree"
     }
   }
 }
