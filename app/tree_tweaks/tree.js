@@ -4,11 +4,12 @@ console.log("Injecting tree hacks");
 
 var root, observer, buttonsDiv, observerTimeout;
 
-const retryInterval = window.setInterval(initialize, 1000);
+const retryInterval = window.setInterval(initialize, 1500);
 
 // Functions
 
 function initialize() {
+    console.log("Checking for store button");
     const storeButton = getStoreButton();
     if (!storeButton) return;
     window.clearInterval(retryInterval);

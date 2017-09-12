@@ -5,9 +5,13 @@
 }
 
     #hide_stickied::after {
-        content: "Hide sticked";
+        content: "Hide stickied";
     }
 
 #app.hide_stickied #hide_stickied::after {
-    content: "Unhide sticked";
+    content: "Unhide stickied";
+}
+
+#app.hide_stickied .stickied {
+    display: none;
 }

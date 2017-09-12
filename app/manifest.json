@@ -12,7 +12,8 @@
       "matches": [
         "*://www.duolingo.com/",
         "*://www.duolingo.com/labs",
-        "*://www.duolingo.com/show_store"
+        "*://www.duolingo.com/show_store",
+        "*://www.duolingo.com/practice"
       ],
       "js": [
         "tree_tweaks/tree.js"

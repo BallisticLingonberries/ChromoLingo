@@ -6,7 +6,6 @@ var app, hideStickiedButton, observer, observerTimeout;
 
 const retryInterval = window.setInterval(initialize, 1000);
 
-
 // Functions
 
 function initialize() {
@@ -47,18 +46,21 @@ function refreshTree() { // Called frequently; do not nest functions
     stopObserver();
 
     if (!commentsList.getAttribute("data-hooked")) {
-        console.log("askQuestionButton", askQuestionButton, "Parent:", askQuestionButton.parentElement);
-        console.log("navTabs", navTabs);
-        console.log("commentsList", commentsList);
         askQuestionButton.parentElement.insertBefore(hideStickiedButton, navTabs);
         commentsList.setAttribute("data-hooked", true);
     }
 
-    matchappClassesToAllSettings();
+    Array.from(commentsList.children).forEach(classifySticky, commentsList);
+
+    matchAppClassesToAllSettings();
     startObserver();
 }
 
-function matchappClassesToAllSettings() {
+function classifySticky(post) {
+    post.classList.toggle("stickied", !!post.querySelector(".sticky-discussion-message"));
+}
+
+function matchAppClassesToAllSettings() {
     chrome.storage.sync.get(["hide_stickied"], gotSettingValues);
 }
 
