@@ -1,0 +1,64 @@
+#cl-tree-mods {
+    margin-top: 7px;
+}
+
+#hide_gold,
+#hide_locked {
+    margin-right: 4px;
+}
+
+#hide_gold::after {
+    content: 'Hide Golden';
+}
+
+#root.hide_gold #hide_gold::after {
+    content: 'Unhide Golden';
+}
+
+#hide_locked::after {
+    content: 'Hide Locked';
+}
+
+#root.hide_locked #hide_locked::after {
+    content: 'Unhide Locked';
+}
+
+[data-test=skill-tree] {
+    display: flex;
+    flex-direction: column;
+}
+
+#root.flip_tree [data-test=skill-tree] {
+    flex-direction: column-reverse;
+}
+
+[data-test=skill-tree]>div:first-child {
+    order: 0;
+}
+
+#root.flip_tree [data-test=skill-tree]>div:first-child {
+    order: 1;
+}
+
+#root.hide_gold .gold-only,
+#root.hide_locked .locked,
+#root.hide_gold [data-test~=gold],
+[data-test=skill-tree]>div:last-child {
+    display: none;
+}
+
+#cl-icon-arrow {
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+    left: -5px;
+    height: 10px;
+    width: 16px;
+    background-image: url(//d35aaqx5ub95lt.cloudfront.net/images/icon-sprite2.svg);
+    background-position-x: -98px;
+    background-position-y: -70px;
+}
+
+#root.flip_tree #cl-icon-arrow {
+    background-position-y: -80px;
+}

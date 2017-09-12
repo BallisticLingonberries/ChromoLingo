@@ -1,0 +1,56 @@
+{
+  "manifest_version": 2,
+  "name": "ChromoLingo",
+  "version": "1.0",
+  "description": "Adds some improvements to the Duolingo website.",
+  "background": {
+    "scripts": [ "eventPage.js" ],
+    "persistent": false
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://www.duolingo.com/*"
+      ],
+      "js": [
+        "flip_tree_hide_gold/content.js"
+      ],
+      "css": [
+        "flip_tree_hide_gold/style.css"
+      ]
+    }
+  ],
+  "permissions": [
+    "storage",
+    "contextMenus",
+    "commands",
+    "tabs"
+  ],
+  "commands": {
+    "toggle_hide_gold": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+G",
+        "mac": "Command+Shift+G"
+      },
+      "description": "Hide gold skills"
+    },
+    "toggle_hide_locked": {
+      "description": "Hide locked skills"
+    },
+    "toggle_flip_tree": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+F",
+        "mac": "Command+Shift+F"
+      },
+      "description": "Flip tree"
+    },
+    "launch_practice": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+2",
+        "mac": "Command+Shift+2"
+      },
+      "description": "Launch practice for current language",
+      "global": true
+    }
+  }
+}
