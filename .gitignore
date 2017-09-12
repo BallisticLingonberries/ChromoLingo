@@ -10,6 +10,7 @@ bin/
 *.csproj
 *.config
 *.htm
+*.sln
 
 
 # User-specific files
