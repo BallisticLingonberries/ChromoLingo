@@ -11,6 +11,7 @@ bin/
 *.config
 *.htm
 
+
 # User-specific files
 *.suo
 *.user
