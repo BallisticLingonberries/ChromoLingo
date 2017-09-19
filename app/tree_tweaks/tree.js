@@ -1,20 +1,19 @@
 "use strict";
 
-console.log("Injecting tree hacks");
+var observer, buttonsDiv, observerTimeout;
 
-var root, observer, buttonsDiv, observerTimeout;
-
-const retryInterval = window.setInterval(initialize, 1500);
+const bd = document.body, retryInterval = window.setInterval(initialize, 1500);
 
 // Functions
 
 function initialize() {
-    console.log("Checking for store button");
+    console.log("tree.js: Checking for 'Store' button.");
+
     const storeButton = getStoreButton();
     if (!storeButton) return;
+
     window.clearInterval(retryInterval);
 
-    root = document.getElementById("root");
     observer = new MutationObserver(refreshTree);
 
     chrome.runtime.onMessage.addListener(refreshTree);
@@ -56,7 +55,7 @@ function initializeButtons(storeButton) {
 
     function handleButtonClick() {
         const id = this.id,
-            toggle = !root.classList.contains(id);
+            toggle = !bd.classList.contains(id);
 
         chrome.storage.sync.set({ [id]: toggle });
     }
@@ -87,8 +86,13 @@ function classifyAllSkillParents() {
 }
 
 function classifyParent(parentGroup) {
-    parentGroup.classList.toggle("gold-only", parentGroup.querySelectorAll("[data-test~=gold]").length === parentGroup.children.length);
-    parentGroup.classList.toggle("locked", !parentGroup.querySelector("a") || !!parentGroup.querySelector("[data-test=test-out-button]"));
+    parentGroup.classList.toggle("gold-only",
+        parentGroup.querySelectorAll("[data-test~=gold]").length === parentGroup.children.length);
+    parentGroup.classList.toggle("locked",
+        parentGroup.getElementsByTagName("a")
+        .length ===
+        0 ||
+        !!parentGroup.querySelector("[data-test=test-out-button]"));
 }
 
 function matchRootClassesToAllSettings() {
@@ -104,8 +108,7 @@ function gotSettingValues(settings) {
 }
 
 function matchRootClassToSetting(className, val) {
-    root.classList.toggle(className, val);
-    console.log("Update class", className, val);
+    bd.classList.toggle(className, val);
 }
 
 function startObserver() {
@@ -117,13 +120,13 @@ function startObserver() {
 }
 
 function observe() {
-    observer.observe(root,
-        {
-            "subtree": true,
-            "childList": true,
-            "attributes": true,
-            "characterData": true
-        });
+    observer.observe(bd,
+    {
+        "subtree": true,
+        "childList": true,
+        "attributes": true,
+        "characterData": true
+    });
 }
 
 function stopObserver() {

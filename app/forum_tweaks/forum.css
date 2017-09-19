@@ -4,14 +4,22 @@
     z-index: 10;
 }
 
-    #hide_stickied::after {
-        content: "Hide stickied";
-    }
+body.hiding #hide_stickied::after {
+    content: "Hiding stickied posts...";
+}
 
-#app.hide_stickied #hide_stickied::after {
+body.hide_stickied.hiding .stickied {
+    position: absolute;
+}
+
+#hide_stickied::after {
+    content: "Hide stickied";
+}
+
+body.hide_stickied #hide_stickied::after {
     content: "Unhide stickied";
 }
 
-#app.hide_stickied .stickied {
+body.hide_stickied .stickied {
     display: none;
 }

@@ -1,24 +1,18 @@
 "use strict";
 
-console.log("Injecting forum hacks");
-
-var app, hideStickiedButton, observer, observerTimeout;
-
-const retryInterval = window.setInterval(initialize, 1000);
-
-// Functions
+var hideStickiedButton, rehook, observer, observerTimeout;
+const bd = document.body, retryInterval = window.setInterval(initialize, 1000);
 
 function initialize() {
-    const askQuestionButton = document.querySelector("#ask-question");
+    console.log("forum.js: Checking for 'Ask Question' button.");
+
+    const askQuestionButton = document.getElementById("ask-question");
     if (!askQuestionButton) return;
     window.clearInterval(retryInterval);
 
-    app = document.getElementById("app");
-    observer = new MutationObserver(refreshTree);
-
-    chrome.runtime.onMessage.addListener(refreshTree);
-
     initializeButton();
+    observer = new MutationObserver(refreshTree);
+    chrome.runtime.onMessage.addListener(refreshTree);
     refreshTree();
 }
 
@@ -32,71 +26,111 @@ function initializeButton() {
 }
 
 function handleHideStickiedClick() {
-    console.log("Hide stickied clicked");
+    const toggle = !bd.classList.contains("hide_stickied");
 
-    chrome.storage.sync.set({ "hide_stickied": !app.classList.contains("hide_stickied") });
+    chrome.storage.sync.set({ "hide_stickied": toggle });
 }
 
-function refreshTree() { // Called frequently; do not nest functions
-    const askQuestionButton = document.querySelector("#ask-question"),
-        navTabs = document.querySelector(".nav-tabs"),
-        commentsList = document.getElementById("comments");
-
-    if (!askQuestionButton || !navTabs || !commentsList) return;
-    stopObserver();
-
-    if (!commentsList.getAttribute("data-hooked")) {
-        askQuestionButton.parentElement.insertBefore(hideStickiedButton, navTabs);
-        commentsList.setAttribute("data-hooked", true);
+function refreshTree() {
+    if (location.pathname.indexOf("comment") !== -1) {
+        console.log("Pathname:", location.pathname);
+        return;
     }
 
-    Array.from(commentsList.children).forEach(classifySticky, commentsList);
+    const askQuestionButton = document.getElementById("ask-question"),
+        navTabs = document.getElementsByClassName("nav-tabs")[0];
+    if (!askQuestionButton || !navTabs) return;
+    stopObserver();
 
-    matchAppClassesToAllSettings();
+    if (!askQuestionButton.getAttribute("data-hooked")) {
+        askQuestionButton.parentElement.insertBefore(hideStickiedButton, navTabs);
+        askQuestionButton.setAttribute("data-hooked", true);
+        rehook = true;
+    }
+
+    chrome.storage.sync.get(["hide_stickied"], gotSettings);
+}
+
+function gotSettings(settings) {
+    const hideStickied = settings["hide_stickied"];
+    if (hideStickied) {
+        setHiding(true);
+        window.setTimeout(doHideStickied, 1000);
+    } else {
+        setHide(false);
+        startObserver();
+    }
+}
+
+function doHideStickied() {
+    const comments = document.getElementsByClassName("list-discussion-item"),
+        cL = comments.length,
+        stickyComments = document.getElementsByClassName("sticky-discussion-message");
+
+    for (let i = 0; i < cL; i++) {
+        if (!classifySticky(comments[i])) {
+            break;
+        };
+    }
+
+    if (stickyComments.length + 5 >= cL) {
+        window.scrollTo(0, bd.scrollHeight);
+        window.setTimeout(doHideStickied, 1000);
+        return;
+    }
+
+    if (rehook) {
+        rehook = false;
+        window.scrollTo(0, 0);
+    }
+
+    setHide(true);
+    setHiding(false);
     startObserver();
 }
 
 function classifySticky(post) {
-    post.classList.toggle("stickied", !!post.querySelector(".sticky-discussion-message"));
-}
+    const isSticky = !!post.getElementsByClassName("sticky-discussion-message").length,
+        wasSticky = post.classList.contains("stickied");
 
-function matchAppClassesToAllSettings() {
-    chrome.storage.sync.get(["hide_stickied"], gotSettingValues);
-}
-
-function gotSettingValues(settings) {
-    for (let setting in settings) {
-        if (!settings.hasOwnProperty(setting)) continue;
-
-        matchappClassToSetting(setting, settings[setting]);
+    if (wasSticky !== isSticky) {
+        post.classList.toggle("stickied");
+        console.log("Marking post", post, "as sticky:", isSticky, "from previous:", wasSticky);
     }
+
+    return isSticky;
 }
 
-function matchappClassToSetting(className, val) {
-    app.classList.toggle(className, val);
-    console.log("Update class", className, val);
+function setHiding(hiding) {
+    bd.classList.toggle("hiding", hiding);
+}
+
+function setHide(hide) {
+    bd.classList.toggle("hide_stickied", hide);
 }
 
 function startObserver() {
     if (!observer) return;
-
     window.clearTimeout(observerTimeout);
-
     observerTimeout = window.setTimeout(observe, 500);
 }
 
 function observe() {
-    observer.observe(app,
+    observer.observe(bd,
         {
             "subtree": true,
             "childList": true,
             "attributes": true,
             "characterData": true
         });
+
+    console.log("Started observer");
 }
 
 function stopObserver() {
     if (!observer) return;
 
     observer.disconnect();
+
+    console.log("Stopped observer");
 }

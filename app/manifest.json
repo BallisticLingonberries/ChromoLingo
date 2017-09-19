@@ -4,7 +4,7 @@
   "version": "1.0",
   "description": "Adds some improvements to the Duolingo website.",
   "background": {
-    "scripts": [ "eventPage.js" ],
+    "scripts": ["eventPage.js"],
     "persistent": false
   },
   "content_scripts": [
@@ -12,8 +12,8 @@
       "matches": [
         "*://www.duolingo.com/",
         "*://www.duolingo.com/labs",
-        "*://www.duolingo.com/show_store",
-        "*://www.duolingo.com/practice"
+        "*://www.duolingo.com/practice",
+        "*://www.duolingo.com/show_store"
       ],
       "js": [
         "tree_tweaks/tree.js"
@@ -24,8 +24,9 @@
     },
     {
       "matches": [
-        "*://www.duolingo.com/discussion/*",
-        "*://www.duolingo.com/topic/*"
+        "*://www.duolingo.com/topic/*",
+        "*://www.duolingo.com/comment/*",
+        "*://www.duolingo.com/discussion/*"
       ],
       "js": [
         "forum_tweaks/forum.js"

@@ -6,20 +6,20 @@ chrome.runtime.onInstalled.addListener(function() {
         titles = ["Flip Tree", "Hide Gold Skills", "Hide Locked Skills"];
 
     for (let i = 0, l = ids.length; i < l; i++) {
-        chrome.contextMenus.create(getMenuItem(ids[i], titles[i], "checkbox"));
+        chrome.contextMenus.create(getMenuItem(ids[i], titles[i]));
     }
 
-   // chrome.contextMenus.create(getMenuItem("sep2", "Separator", "separator"));
-    chrome.contextMenus.create(getMenuItem("hide_stickied", "Hide Stickied Posts", "checkbox"));
+    // chrome.contextMenus.create(getMenuItem("sep2", "Separator", "separator"));
+    chrome.contextMenus.create(getMenuItem("hide_stickied", "Hide Stickied Posts"));
 });
 
 function getMenuItem(id, title, type) {
     return {
         "contexts": ["all"],
-        "documentUrlPatterns": ["*://*.duolingo.com/*"],
         "id": id,
         "title": title,
-        "type": type
+        "documentUrlPatterns": ["*://*.duolingo.com/*"],
+        "type": type || "checkbox"
     };
 }
 
@@ -36,13 +36,13 @@ chrome.runtime.onStartup.addListener(function() {
 
 chrome.contextMenus.onClicked.addListener(function(info) {
     switch (info.menuItemId) {
-        case "launch_practice":
-            launchPractice();
-            break;
-        case "sep1":
-            break;
-        default:
-            setSetting(info.menuItemId, info.checked);
+    case "launch_practice":
+        launchPractice();
+        break;
+    case "sep1":
+        break;
+    default:
+        setSetting(info.menuItemId, info.checked);
     }
 });
 
@@ -54,9 +54,7 @@ chrome.storage.onChanged.addListener(function(setting) {
 
     chrome.contextMenus.update(settingName, { "checked": newValue });
 
-    chrome.tabs.query({
-        url: "*://*.duolingo.com/*"
-    }, sendMessageToTabs);
+    chrome.tabs.query({ url: "*://*.duolingo.com/*" }, sendMessageToTabs);
 });
 
 function sendMessageToTabs(tabs) {
@@ -80,9 +78,10 @@ chrome.commands.onCommand.addListener(function(command) {
 });
 
 function toggleSetting(setting) {
-    chrome.storage.sync.get(setting, function(settings) {
-        setSetting(setting, !settings[setting]);
-    });
+    chrome.storage.sync.get(setting,
+        function(settings) {
+            setSetting(setting, !settings[setting]);
+        });
 }
 
 function setSetting(setting, value) {
@@ -90,19 +89,21 @@ function setSetting(setting, value) {
 }
 
 function launchPractice() {
-    chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
-        const url = { "url": "https://www.duolingo.com/practice" }
+    chrome.tabs.query({ active: true, currentWindow: true }, gotTabs);
+}
 
-        if (tabs[0].url.indexOf("duolingo") === -1) {
-            chrome.tabs.query(url, function(tabs2) {
+function gotTabs(tabs) {
+    const url = { "url": "https://www.duolingo.com/practice" };
+    if (tabs[0].url.indexOf("duolingo") === -1) {
+        chrome.tabs.query(url,
+            function(tabs2) {
                 if (tabs2.length) {
                     chrome.tabs.update(tabs2[0].id, { "active": true });
                 } else {
                     chrome.tabs.create(url);
                 }
             });
-        } else {
-            chrome.tabs.update(tabs[0].id, url);
-        }
-    });
+    } else {
+        chrome.tabs.update(tabs[0].id, url);
+    }
 }
